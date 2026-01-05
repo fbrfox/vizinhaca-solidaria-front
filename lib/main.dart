@@ -24,7 +24,15 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await dotenv.load(fileName: 'assets/.env.production');
+  
+  // Carrega o arquivo .env baseado na variável de ambiente ENV
+  // Padrão: development, mas pode ser definido como 'production' via --dart-define=ENV=production
+  const env = String.fromEnvironment('ENV', defaultValue: 'development');
+  final envFile = env == 'production' 
+      ? 'assets/.env.production' 
+      : 'assets/.env.development';
+  
+  await dotenv.load(fileName: envFile);
   await init();
   runApp(const MyApp());
 }
@@ -94,7 +102,7 @@ class MyApp extends StatelessWidget {
                 borderSide: BorderSide(color: primaryColor),
               ),
             ),
-            cardTheme: CardTheme(
+            cardTheme: CardThemeData(
               elevation: 5, // Define a elevação do Card
               shadowColor: Colors.grey
                   .withAlpha((255.0 * 0.5).round()), // Define a cor da sombra
